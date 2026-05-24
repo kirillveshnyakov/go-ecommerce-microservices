@@ -1,0 +1,14 @@
+version: "2"
+
+sql:
+  - engine: "postgresql"
+    queries: "internal/repository/cart/queries.sql"
+    schema: "migrations/migrations"
+    gen:
+      go:
+        package: "cart"
+        out: "internal/repository/cart/sqlc"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_interface: true
+        omit_unused_structs: true

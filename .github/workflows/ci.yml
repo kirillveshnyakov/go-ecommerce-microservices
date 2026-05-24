@@ -2,6 +2,27 @@ name: CI
 
 on:
   workflow_dispatch:
+    inputs:
+      run_unit:
+        description: "Run unit tests"
+        required: true
+        default: true
+        type: boolean
+      run_integration:
+        description: "Run integration tests"
+        required: true
+        default: true
+        type: boolean
+      run_lint:
+        description: "Run linter"
+        required: true
+        default: true
+        type: boolean
+      run_coverage:
+        description: "Print test coverage"
+        required: true
+        default: true
+        type: boolean
 
 permissions:
   contents: read
@@ -11,7 +32,7 @@ env:
 
 jobs:
   ci:
-    name: Generate, Lint, Test
+    name: Manual checks
     runs-on: ubuntu-latest
 
     steps:
@@ -42,16 +63,38 @@ jobs:
         run: git diff --exit-code
 
       - name: Lint
+        if: ${{ inputs.run_lint }}
         run: task lint
 
       - name: Unit tests
+        if: ${{ inputs.run_unit }}
         run: |
           (cd cart && go test ./...)
           (cd loms && go test ./...)
           (cd notifications && go test ./...)
-          (cd pkg && go test ./...)
+
+      - name: Coverage
+        if: ${{ inputs.run_coverage }}
+        run: |
+          mkdir -p coverage
+          for mod in cart loms notifications pkg; do
+            (
+              cd "$mod"
+              go test ./... -covermode=atomic -coverprofile="../coverage/${mod}.out"
+            )
+          done
+
+          echo "mode: atomic" > coverage/combined.out
+          tail -q -n +2 coverage/cart.out coverage/loms.out coverage/notifications.out coverage/pkg.out >> coverage/combined.out
+
+          echo "Coverage summary:"
+          go tool cover -func=coverage/combined.out | tee coverage/summary.txt
+          echo
+          echo "Total coverage:"
+          grep '^total:' coverage/summary.txt
 
       - name: Validate Docker Compose config
+        if: ${{ inputs.run_integration }}
         run: |
           docker compose \
             -f docker-compose.ci.yml \
@@ -59,6 +102,7 @@ jobs:
             config --quiet
 
       - name: Integration tests
+        if: ${{ inputs.run_integration }}
         run: |
           docker compose \
             -f docker-compose.ci.yml \
@@ -74,7 +118,7 @@ jobs:
             --exit-code-from integration-tests
 
       - name: Cleanup
-        if: always()
+        if: ${{ always() && inputs.run_integration }}
         run: |
           docker compose \
             -f docker-compose.ci.yml \

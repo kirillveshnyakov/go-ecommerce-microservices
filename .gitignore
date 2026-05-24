@@ -1,0 +1,45 @@
+# IDE / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Go
+bin/
+*.test
+*.out
+coverage.out
+cover.out
+cover.out.tmp
+.gocache/
+
+# Generated code
+pkg/generated/
+docs/spec/
+*_mock.go
+*_mocks.go
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+
+# Logs / temp
+*.log
+tmp/
+temp/
+
+# Docker / local runtime
+docker-compose.override.yml
+
+# Local tool caches
+.easyp/

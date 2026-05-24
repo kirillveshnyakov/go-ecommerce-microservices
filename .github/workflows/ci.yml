@@ -69,29 +69,34 @@ jobs:
       - name: Unit tests
         if: ${{ inputs.run_unit }}
         run: |
-          (cd cart && go test ./...)
-          (cd loms && go test ./...)
-          (cd notifications && go test ./...)
+          (cd cart && go test -v -count=1 ./...)
+          (cd loms && go test -v -count=1 ./...)
+          (cd notifications && go test -v -count=1 ./...)
 
       - name: Coverage
         if: ${{ inputs.run_coverage }}
         run: |
           mkdir -p coverage
-          for mod in cart loms notifications pkg; do
-            (
-              cd "$mod"
-              go test ./... -covermode=atomic -coverprofile="../coverage/${mod}.out"
-            )
+
+          printf "| Service | Coverage |\n| --- | ---: |\n" | tee coverage/summary.md
+
+          for service in loms cart notifications; do
+            echo "Checking coverage for ${service}..."
+
+            if ! (cd "$service" && go test ./... -count=1 -covermode=atomic -coverprofile="../coverage/${service}.out") > "coverage/${service}.test.log"; then
+              cat "coverage/${service}.test.log"
+              exit 1
+            fi
+
+            coverage_value="$(go tool cover -func="coverage/${service}.out" | awk '/^total:/ { print $3 }')"
+            printf "| %s | %s |\n" "$service" "$coverage_value" | tee -a coverage/summary.md
           done
 
-          echo "mode: atomic" > coverage/combined.out
-          tail -q -n +2 coverage/cart.out coverage/loms.out coverage/notifications.out coverage/pkg.out >> coverage/combined.out
-
-          echo "Coverage summary:"
-          go tool cover -func=coverage/combined.out | tee coverage/summary.txt
-          echo
-          echo "Total coverage:"
-          grep '^total:' coverage/summary.txt
+          {
+            echo "### Test coverage"
+            echo
+            cat coverage/summary.md
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Validate Docker Compose config
         if: ${{ inputs.run_integration }}

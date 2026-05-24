@@ -9,6 +9,8 @@ services:
     environment:
       GRPC_PORT: "50051"
       GRPC_GATEWAY_PORT: "8080"
+      GRPC_SHUTDOWN_TIME: "5s"
+      HTTP_SHUTDOWN_TIME: "30s"
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
       POSTGRES_DB: "ecommerce"
@@ -34,6 +36,8 @@ services:
     environment:
       GRPC_PORT: "50061"
       GRPC_GATEWAY_PORT: "8090"
+      GRPC_SHUTDOWN_TIME: "5s"
+      HTTP_SHUTDOWN_TIME: "30s"
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
       POSTGRES_DB: "ecommerce"
@@ -61,11 +65,14 @@ services:
     environment:
       GRPC_PORT: "50052"
       GRPC_GATEWAY_PORT: "8081"
+      GRPC_SHUTDOWN_TIME: "5s"
+      HTTP_SHUTDOWN_TIME: "30s"
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
       POSTGRES_DB: "ecommerce"
       POSTGRES_USER: "ecommerce_user"
       POSTGRES_PASSWORD: "12345"
+      NOTIFICATIONS_GRPC_ADDR: "notifications:50053"
       OUTBOX_WORKERS: "1"
       OUTBOX_BATCH_SIZE: "10"
       OUTBOX_FETCH_PERIOD: "200ms"
@@ -93,11 +100,14 @@ services:
     environment:
       GRPC_PORT: "50062"
       GRPC_GATEWAY_PORT: "8091"
+      GRPC_SHUTDOWN_TIME: "5s"
+      HTTP_SHUTDOWN_TIME: "30s"
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
       POSTGRES_DB: "ecommerce"
       POSTGRES_USER: "ecommerce_user"
       POSTGRES_PASSWORD: "12345"
+      NOTIFICATIONS_GRPC_ADDR: "notifications:50053"
       OUTBOX_WORKERS: "1"
       OUTBOX_BATCH_SIZE: "10"
       OUTBOX_FETCH_PERIOD: "200ms"
@@ -127,6 +137,7 @@ services:
     environment:
       CALLBACK_ADDR: ""
       GRPC_PORT: "50053"
+      GRPC_SHUTDOWN_TIME: "5s"
       POSTGRES_HOST: "postgres"
       POSTGRES_PORT: "5432"
       POSTGRES_DB: "ecommerce"
@@ -135,6 +146,14 @@ services:
       KAFKA_BROKERS: "kafka-single:9092"
       KAFKA_NOTIFICATIONS_TOPIC: "order_status_notifications"
       KAFKA_CONSUMER_GROUP: "notifications"
+      TELEGRAM_TOKEN: ""
+      TELEGRAM_CHAT_ID: "0"
+      INBOX_WORKERS: "2"
+      INBOX_MAX_ATTEMPTS: "20"
+      INBOX_BATCH_SIZE: "5"
+      INBOX_FETCH_PERIOD: "200ms"
+      INBOX_RETRY_DELAY: "1s"
+      INBOX_IN_PROGRESS_TTL: "30s"
     depends_on:
       kafka-single:
         condition: service_healthy

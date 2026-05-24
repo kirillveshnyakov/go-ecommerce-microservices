@@ -30,21 +30,6 @@ tasks:
           --abort-on-container-exit \
           --exit-code-from integration-tests
 
-  update:
-    desc: "Update tests"
-    requires:
-      vars: [ hw ]
-    cmds:
-      - go run .github/update.go -hw {{.hw}}
-
-  force-update:
-    desc: "Force update tests"
-    aliases: [ "force_update", "fu" ]
-    requires:
-      vars: [ hw ]
-    cmds:
-      - go run .github/update.go -force -hw {{.hw}}
-
   lint:
     desc: "Run golangci-lint"
     cmds:
@@ -124,9 +109,11 @@ tasks:
         echo 'Successfully updated'
 
   build:
-    desc: Build
+    desc: Build all services
     cmds:
-      - go build -o ./bin/app ./cmd/app/
+      - go build -o ./bin/cart ./cart/cmd/app/
+      - go build -o ./bin/loms ./loms/cmd/app/
+      - go build -o ./bin/notifications ./notifications/cmd/app/
 
   create-bin:
     internal: true

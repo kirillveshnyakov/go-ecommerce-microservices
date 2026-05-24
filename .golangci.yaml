@@ -1,0 +1,160 @@
+version: "2"
+run:
+  go: "1.26"
+  issues-exit-code: 1
+  tests: false
+  allow-parallel-runners: true
+output:
+  formats:
+    text:
+      path: stderr
+      print-linter-name: true
+      print-issued-lines: true
+linters:
+  default: none
+  enable:
+    - bidichk
+    - bodyclose
+    - containedctx
+    - errcheck
+    - errname
+    - goconst
+    - gocritic
+    - goprintffuncname
+    - govet
+    - ineffassign
+    - makezero
+    - mirror
+    - mnd
+    - nestif
+    - nilnil
+    - nolintlint
+    - nosprintfhostport
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - predeclared
+    - protogetter
+    - revive
+    - staticcheck
+    - testifylint
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+    - usetesting
+    - wastedassign
+    - whitespace
+  settings:
+    exhaustive:
+      default-signifies-exhaustive: true
+    gocognit:
+      min-complexity: 10
+    goconst:
+      min-len: 2
+      min-occurrences: 2
+    gocyclo:
+      min-complexity: 10
+    govet:
+      enable:
+        - shadow
+    mnd:
+      ignored-numbers:
+        - "10"
+        - "64"
+        - "2"
+        - "4"
+    nakedret:
+      max-func-lines: 25
+    nestif:
+      min-complexity: 7
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+  exclusions:
+    generated: lax
+    rules:
+      - linters:
+          - perfsprint
+        path: _test\.go
+      - linters:
+          - staticcheck
+        text: should check error returned from .* before deferring .*\.Close()
+      - linters:
+          - revive
+        path: _test\.go
+        text: 'unused-parameter: parameter ''.*'' seems to be unused, consider removing or renaming it as _'
+      - linters:
+          - containedctx
+          - dupl
+          - gosec
+          - mnd
+        path: _test\.go
+      - path: (.+)\.go$
+        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv). is not checked
+      - path: (.+)\.go$
+        text: (comment on exported (method|function|type|const)|should have( a package)? comment|comment should be of the form)
+      - path: (.+)\.go$
+        text: (G104|G307)
+      - path: (.+)\.go$
+        text: (Expect directory permissions to be 0750 or less|Expect file permissions to be 0600 or less)
+      - path: (.+)\.go$
+        text: Potential file inclusion via variable
+      - path: (.+)\.go$
+        text: (comment on exported (method|function|type|const)|should have( a package)? comment|comment should be of the form)
+      - path: (.+)\.go$
+        text: exported (.+) should have comment( \(or a comment on this block\))? or be unexported
+      - path: (.+)\.go$
+        text: package comment should be of the form "(.+)...
+      - path: (.+)\.go$
+        text: comment on exported (.+) should be of the form "(.+)..."
+      - path: (.+)\.go$
+        text: should have a package comment, unless it's in another file for this package
+      - path: (.+)\.go$
+        text: don't use an underscore in package name
+      - path: (.+)\.go$
+        text: exported (.+) returns unexported type (.+) which can be annoying to use
+    paths:
+      - \.pb\.go$
+      - \.pb\.gw\.go$
+      - \.pb\.scratch\.go$
+      - \.pb\.goclay\.go$
+      - \.pb\.validate\.go$
+      - \_mock_test\.go$
+      - integration_test\.go$
+      - doc.go$
+      - \.\/\.cache\/.*
+      - bin
+      - vendor
+      - var
+      - tmp
+      - .*/go/src/.*
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - \.pb\.go$
+      - \.pb\.gw\.go$
+      - \.pb\.scratch\.go$
+      - \.pb\.goclay\.go$
+      - \.pb\.validate\.go$
+      - \_mock_test\.go$
+      - integration_test\.go$
+      - doc.go$
+      - \.\/\.cache\/.*
+      - bin
+      - vendor
+      - var
+      - tmp
+      - .*/go/src/.*
+      - third_party$
+      - builtin$
+      - examples$
